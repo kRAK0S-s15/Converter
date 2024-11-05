@@ -2,6 +2,7 @@ import telebot
 from telebot import types
 import config
 import bel_api
+import pol_api
 
 bot = telebot.TeleBot(config.TOKEN)
 
@@ -12,20 +13,21 @@ def send_welcome(message):
 
     # Создание кнопок
     keyboard = types.InlineKeyboardMarkup()
-    button_polska = types.InlineKeyboardButton(text = 'Polska', callback_data = 'button_polska')
+    button_poland = types.InlineKeyboardButton(text = 'Poland', callback_data = 'button_poland')
     button_belarus = types.InlineKeyboardButton(text = 'Belarus', callback_data = 'button_belarus')
-    keyboard.add(button_polska, button_belarus)
+    keyboard.add(button_poland, button_belarus)
 
     bot.send_message(message.chat.id, first_message, reply_markup = keyboard)
 
- 
+#Обработчик последующих кнопок 
 @bot.callback_query_handler(func = lambda call: True)
 def callback_inline(call):
     if call.message:
-        if call.data == 'button_polska':
+        
+        if call.data == 'button_poland':
             keyboard = types.InlineKeyboardMarkup()
 
-            button_national_polish_bank = types.InlineKeyboardButton(text = 'Polish banks', callback_data = 'button_national_polish_bank')
+            button_national_polish_bank = types.InlineKeyboardButton(text = 'National bank', callback_data = 'button_national_polish_bank')
             keyboard.add(button_national_polish_bank)
 
             bot.send_message(call.message.chat.id,'Choose a bank', parse_mode='html', reply_markup = keyboard)
@@ -35,10 +37,16 @@ def callback_inline(call):
 
             button_national_polish_bank_usd = types.InlineKeyboardButton(text = 'USD', callback_data = 'pol_nat_usd')
             button_national_polish_bank_eur = types.InlineKeyboardButton(text = 'EUR', callback_data = 'pol_nat_eur')
-            button_national_polish_bank_byn = types.InlineKeyboardButton(text = 'BYN', callback_data = 'pol_nat_byn')
-            keyboard.add(button_national_polish_bank_usd, button_national_polish_bank_eur, button_national_polish_bank_byn)
+            keyboard.add(button_national_polish_bank_usd, button_national_polish_bank_eur)
 
             bot.send_message(call.message.chat.id, 'NATIONAL <b>POLISH</b> BANK\n' + 'Choose a currency', parse_mode = 'html', reply_markup = keyboard)
+
+        elif call.data == 'pol_nat_usd':
+            bot.send_message(call.message.chat.id, f"Course 1 {pol_api.get_pol_currency_today('usd')}")
+
+
+        elif call.data == 'pol_nat_eur':
+            bot.send_message(call.message.chat.id, f"Course 1 {pol_api.get_pol_currency_today('eur')}")
 
 
         elif call.data == 'button_belarus':
