@@ -1,17 +1,16 @@
 import telebot
 from telebot import types
 import config
-import bel_api
-import pol_api
+import api
 
 bot = telebot.TeleBot(config.TOKEN)
 
-# Обработчик для команды /start
+# Start commands buttons
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     first_message =  'Hello!\n' + 'Choose a country.'
 
-    # Создание кнопок
+    # Create buttons
     keyboard = types.InlineKeyboardMarkup()
     button_poland = types.InlineKeyboardButton(text = 'Poland', callback_data = 'button_poland')
     button_belarus = types.InlineKeyboardButton(text = 'Belarus', callback_data = 'button_belarus')
@@ -19,7 +18,7 @@ def send_welcome(message):
 
     bot.send_message(message.chat.id, first_message, reply_markup = keyboard)
 
-#Обработчик последующих кнопок 
+# Add next buttons 
 @bot.callback_query_handler(func = lambda call: True)
 def callback_inline(call):
     if call.message:
@@ -37,16 +36,20 @@ def callback_inline(call):
 
             button_national_polish_bank_usd = types.InlineKeyboardButton(text = 'USD', callback_data = 'pol_nat_usd')
             button_national_polish_bank_eur = types.InlineKeyboardButton(text = 'EUR', callback_data = 'pol_nat_eur')
-            keyboard.add(button_national_polish_bank_usd, button_national_polish_bank_eur)
+            button_national_polish_bank_byn = types.InlineKeyboardButton(text = 'BYN', callback_data = 'pol_nat_byn')
+            keyboard.add(button_national_polish_bank_usd, button_national_polish_bank_eur, button_national_polish_bank_byn)
 
             bot.send_message(call.message.chat.id, 'NATIONAL <b>POLISH</b> BANK\n' + 'Choose a currency', parse_mode = 'html', reply_markup = keyboard)
 
         elif call.data == 'pol_nat_usd':
-            bot.send_message(call.message.chat.id, f"Course 1 {pol_api.get_pol_currency_today('usd')}")
+            bot.send_message(call.message.chat.id, f"Course 1 {api.get_pol_currency_last('usd')[0]}")
 
 
         elif call.data == 'pol_nat_eur':
-            bot.send_message(call.message.chat.id, f"Course 1 {pol_api.get_pol_currency_today('eur')}")
+            bot.send_message(call.message.chat.id, f"Course 1 {api.get_pol_currency_last('eur')[0]}")
+
+        elif call.data == 'pol_nat_byn':
+            bot.send_message(call.message.chat.id, f"Course 10 BYN for the last avaible date: {round(float(100 / api.get_bel_currecy_last('PLN')[1]), 4)} PLN")
 
 
         elif call.data == 'button_belarus':
@@ -69,16 +72,16 @@ def callback_inline(call):
 
 
         elif call.data == 'bel_nat_usd':
-            bot.send_message(call.message.chat.id, f"Course 1 {bel_api.get_bel_currecy_today('USD')}")
+            bot.send_message(call.message.chat.id, f"Course 1 {api.get_bel_currecy_last('USD')[0]}")
 
 
         elif call.data == 'bel_nat_eur':
-            bot.send_message(call.message.chat.id, f"Course 1 {bel_api.get_bel_currecy_today('EUR')}")
+            bot.send_message(call.message.chat.id, f"Course 1 {api.get_bel_currecy_last('EUR')[0]}")
 
 
         elif call.data == 'bel_nat_pln':
-            bot.send_message(call.message.chat.id, f"Course 10 {bel_api.get_bel_currecy_today('PLN')}")
+            bot.send_message(call.message.chat.id, f"Course 10 {api.get_bel_currecy_last('PLN')[0]}")
 
 
-# Запуск бота
+# Starting the bot
 bot.polling(none_stop=True)
