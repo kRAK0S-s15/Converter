@@ -22,7 +22,7 @@ def send_welcome(message):
 @bot.callback_query_handler(func = lambda call: True)
 def callback_inline(call):
     if call.message:
-        
+        # Poland handler
         if call.data == 'button_poland':
             keyboard = types.InlineKeyboardMarkup()
 
@@ -31,6 +31,7 @@ def callback_inline(call):
 
             bot.send_message(call.message.chat.id,'Choose a bank', parse_mode='html', reply_markup = keyboard)
 
+        # National pokish bank
         elif call.data == 'button_national_polish_bank':
             keyboard = types.InlineKeyboardMarkup()
 
@@ -44,14 +45,13 @@ def callback_inline(call):
         elif call.data == 'pol_nat_usd':
             bot.send_message(call.message.chat.id, f"Course 1 {api.get_pol_currency_last('usd')[0]}")
 
-
         elif call.data == 'pol_nat_eur':
             bot.send_message(call.message.chat.id, f"Course 1 {api.get_pol_currency_last('eur')[0]}")
 
         elif call.data == 'pol_nat_byn':
             bot.send_message(call.message.chat.id, f"Course 10 BYN for the last avaible date: {round(float(100 / api.get_bel_currecy_last('PLN')[1]), 4)} PLN")
 
-
+        # Belarus handler
         elif call.data == 'button_belarus':
             keyboard = types.InlineKeyboardMarkup()
 
@@ -60,6 +60,7 @@ def callback_inline(call):
 
             bot.send_message(call.message.chat.id, "Choose a bank", parse_mode='html', reply_markup = keyboard)
 
+        # National belarsusian bank
         elif call.data == 'button_national_belarusian_bank':
             keyboard = types.InlineKeyboardMarkup()
 
